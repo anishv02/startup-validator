@@ -39,9 +39,11 @@ class LLMService:
 
         for attempt in range(max_retries + 1):
             response = self.llm.invoke(prompt)
+            # Extract text content from AIMessage object
+            response_text = response.content if hasattr(response, 'content') else str(response)
 
             try:
-                json_str = self._extract_json(response)
+                json_str = self._extract_json(response_text)
                 data = json.loads(json_str)
                 validated = output_model(**data)
                 return validated
