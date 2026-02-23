@@ -2,8 +2,20 @@ import streamlit as st
 import requests
 import os
 
-# Use environment variable for deployed backend, fallback to localhost for local dev
-API_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+# Use Streamlit secrets for deployed app, environment variable, or fallback to localhost
+def get_backend_url():
+    # Try Streamlit secrets first (for Streamlit Cloud)
+    try:
+        return st.secrets["BACKEND_URL"]
+    except (KeyError, FileNotFoundError):
+        pass
+    # Try environment variable
+    if os.getenv("BACKEND_URL"):
+        return os.getenv("BACKEND_URL")
+    # Fallback to localhost for local dev
+    return "http://127.0.0.1:8000"
+
+API_URL = get_backend_url()
 
 st.set_page_config(page_title="AI Startup Validator", layout="wide")
 
